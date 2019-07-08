@@ -1,8 +1,12 @@
 # Weather bot for Discord
-Returns weather from sg gov
-    - Currently only rainfall
-### TODO:
+Provides weather information through discord
+
+### Features:
+    - Current rainfall amount   ✓
     - Weather Forecast
+        - 2 hour forecast       ✓
+        - 24 hours
+        - Weekly
     - Alarm system
         - Subscriber system
         - Database required

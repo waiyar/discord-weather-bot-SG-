@@ -1,77 +1,69 @@
-const { Client, RichEmbed } = require('discord.js');
-const client = new Client();
-const auth = require('./auth.json');
-const fetch = require("node-fetch");
+const fs = require('fs');
+const { Client, Collection } = require('discord.js');
+const { prefix, token } = require('./config.json');
 
-const reqWeather = "weather", reqHelp = "help";
+const client = new Client();
+client.commands = new Collection();
+
+const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
+
+for (const file of commandFiles) {
+    const command = require(`./commands/${file}`);
+    client.commands.set(command.name, command);
+}
+
+const cooldowns = new Collection();
 
 client.on("ready", () => {
     console.log(`Logged in as ${client.user.tag}`);
 });
 
 client.on("message", msg => {
-    if (!msg.content[0] === "@") return;
-    if (msg.content.includes(reqWeather)) {
-        let location = msg.content.slice(reqWeather.length + 1).trim();
-        if (location.length < 4) {
-            msg.reply('Invalid location');
-            return;
-        }
-        let time = msg.createdAt;
-        time.setHours(time.getHours() + 8); // SG time
-        time = time.toISOString().slice(0, -5);
+    if (!msg.content.startsWith(prefix) || msg.author.bot) return;
 
-        console.log("Msg time: ", time, ", Location: ", location);
-        getWeather(msg, location, time);
-        
-    } else if (msg.content.includes(reqHelp)) {
-        const embed = new RichEmbed()
-            .setTitle('Weather Bot(WIP)')
-            .setColor('#5e2be0')
-            .setDescription('Use @weather followed by a location. E.g. @weather yishun');
-        msg.channel.send(embed);
+    const args = msg.content.slice(prefix.length).split(/ +/);
+    const commandName = args.shift().toLowerCase();
+
+    if (!client.commands.has(commandName)) return;
+    const command = client.commands.get(commandName);
+
+    if (command.args && !args.length) {
+        let reply = `You didn't provide any arguments, ${msg.author}!`;
+
+        if (command.usage) {
+            reply += `\nThe proper usage would be: \`${prefix}${command.name} ${command.usage}\``;
+        }
+
+        return msg.channel.send(reply);
+    }
+
+    if (!cooldowns.has(command.name)) {
+        cooldowns.set(command.name, new Collection());
+    }
+
+    const now = Date.now();
+    const timestamps = cooldowns.get(command.name);
+    const cooldownAmount = (command.cooldown || 3) * 1000;
+
+    if (timestamps.has(msg.author.id)) {
+        const expirationTime = timestamps.get(msg.author.id) + cooldownAmount;
+
+        if (now < expirationTime) {
+            const timeLeft = (expirationTime - now) / 1000;
+            return msg.reply(`please wait ${timeLeft.toFixed(1)} more second(s) before reusing the \`${command.name}\` command.`);
+        }
+    }
+
+    timestamps.set(msg.author.id, now);
+    setTimeout(() => timestamps.delete(msg.author.id), cooldownAmount);
+
+    try {
+        command.execute(msg, args);
+    } catch (err) {
+        console.error(err);
+        msg.reply("An error occured!");
     }
 });
 
-function getWeather(msg, location, time) {
-    let matchedStation;
 
-    fetch(`https://api.data.gov.sg/v1/environment/rainfall?date_time=${time}`)
-        .then(res => res.json())
-        .then(data => {
-            let allStations = data.metadata.stations;
-            let rainData = data.items[0].readings;
-
-            for (let i = 0, len = allStations.length; i < len; i++) {
-                if (allStations[i].name.toLowerCase().includes(location.toLowerCase())) {
-                    matchedStation = allStations[i];
-                    console.log("Station Id: ", matchedStation.id);
-                    loop:
-                    for (let i = 0, len = rainData.length; i < len; i++) {
-                        if (rainData[i].station_id === matchedStation.id) {
-                            console.log(location + ": ", rainData[i].value);
-                            msg.reply(matchedStation.name + "'s Rain: " + rainData[i].value);
-                            break loop;
-                        }
-                    }
-                }
-            }
-        })
-        .catch(err => console.error(err));
-
-    fetch(`https://api.data.gov.sg/v1/environment/2-hour-weather-forecast?date_time=${time}`)
-        .then(res => res.json())
-        .then(data => {
-            let { valid_period, forecasts } = data.items[0];
-            for (let i = 0, len = forecasts.length; i < len; i++) {
-                if (forecasts[i].area.toLowerCase().includes(location.toLowerCase())) {
-                    msg.reply(`Weather forecast from ${valid_period.start} to ${valid_period.end}
-                        \n${forecasts[i].forecast}`);
-                    console.log(valid_period.start);
-                }
-            }
-        })
-        .catch(err => console.err(err));
-}
-
-client.login(auth.token);
+client.login(token);
