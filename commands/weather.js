@@ -5,7 +5,7 @@ const emojis = [
     { weather: "Partly Cloudy (Day)", emojiName: ":white_sun_cloud:" },
     { weather: "Partly Cloudy (Night)", emojiName: ":cloud:" },
     { weather: "Cloudy", emojiName: ":cloud:" },
-    { weather: "Showers", emojiName: ":cloud_rain" },
+    { weather: "Showers", emojiName: ":cloud_rain:" },
     { weather: "Thundery Showers", emojiName: ":thunder_cloud_rain:" },
 ];
 
@@ -13,11 +13,11 @@ module.exports = {
     name: 'weather',
     description: "Returns weather forecast for 2 hours",
     args: true,
-    usage: '<location>',
+    usage: '[location]',
     cooldown: 5,
     execute(msg, args) {
         let matchedStation;
-        let location = args[0];
+        let location = args.join(' ');
         if (location.length < 4) {  // Temporary solution to avoid too many results
             msg.reply('Invalid location');
             return;
@@ -40,7 +40,7 @@ module.exports = {
                         for (let i = 0, len = rainData.length; i < len; i++) {
                             if (rainData[i].station_id === matchedStation.id) {
                                 console.log(location + ": ", rainData[i].value);
-                                msg.reply(matchedStation.name + "'s Rain: " + rainData[i].value);
+                                msg.reply(`${matchedStation.name}'s Rain: ${rainData[i].value}mm`);
                                 break loop;
                             }
                         }
@@ -66,7 +66,6 @@ module.exports = {
                             .setDescription(`From ${start} to ${end}`)
                             .setFooter(area);
                         msg.channel.send(weatherEmbed);
-                        // msg.reply("Tag: ", msg.member.user.id);
                     }
                 }
             })
