@@ -5,8 +5,9 @@ Provides weather information through discord
     - Current rainfall amount   ✓
     - Weather Forecast
         - 2 hour forecast       ✓
-        - 24 hours
-        - Weekly
+        - 24 hours              ✗ (Becomes region based)
+        - Weekly                ✗ (Becomes region based)
+        - Alternative locations ✓
     - Alarm system
         - Subscriber system
         - Database required
