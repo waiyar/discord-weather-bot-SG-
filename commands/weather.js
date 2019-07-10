@@ -3,6 +3,7 @@ const { RichEmbed } = require('discord.js');
 const { getPreciseDistance } = require('geolib');
 
 const emojis = [
+    { weather: "Fair (Day)", emojiName: ":sunny:" },
     { weather: "Partly Cloudy (Day)", emojiName: ":white_sun_cloud:" },
     { weather: "Partly Cloudy (Night)", emojiName: ":cloud:" },
     { weather: "Cloudy", emojiName: ":cloud:" },
