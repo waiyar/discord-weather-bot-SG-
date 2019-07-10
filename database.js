@@ -1,11 +1,12 @@
 var mysql = require('mysql');
-var connection = mysql.createConnection({
+var connection = mysql.createPool({
+    connectionLimit: 10,
     host: 'localhost',
     user: 'root',
     password: '',
-    database: 'weatherBot'
+    database: 'weatherBot',
+    supportBigNumbers: true,
+    bigNumberStrings: true,
 });
-
-connection.connect();
 
 module.exports = connection;
