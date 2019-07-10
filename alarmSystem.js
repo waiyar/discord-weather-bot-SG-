@@ -1,32 +1,36 @@
 const connection = require('./database.js');
 const fetch = require("node-fetch");
 const { getPreciseDistance } = require('geolib');
+const { RichEmbed } = require('discord.js');
 
 // Check table for queries every 5 minutes
 const checkSubs = (users) => {
     let sql = "SELECT * FROM `subscriptions`";
     let subArr = [];
-    connection.query(sql, (err, res) => {
-        if (err) console.error(err);
-        if (!res.length) {
-            return;
-        }
-        searchLoop:
-        for (let i = 0; i < res.length; i++) {
-            if (subArr.length) {
-                for (let j = 0; j < subArr.length; j++) {
-                    // If area exists, append to id array instead
-                    if (subArr[j].area === res[i].area) {
-                        subArr[j].userId.push(res[i].userId);
-                        continue searchLoop;
+    try {
+        connection.query(sql, (err, res) => {
+            if (err) throw err;
+            if (!res.length) {
+                return;
+            }
+            searchLoop:
+            for (let i = 0; i < res.length; i++) {
+                if (subArr.length) {
+                    for (let j = 0; j < subArr.length; j++) {
+                        // If area exists, append to id array instead
+                        if (subArr[j].area === res[i].area) {
+                            subArr[j].userId.push(res[i].userId);
+                            continue searchLoop;
+                        }
                     }
                 }
+                subArr.push({ area: res[i].area, userId: [res[i].userId] });
             }
-            console.log(res[i].userId);
-            subArr.push({ area: res[i].area, userId: [res[i].userId] });
-        }
-        return checkWeather(subArr, users);
-    });
+            return checkWeather(subArr, users);
+        });
+    } catch (e) {
+        console.error(e);
+    }
 }
 
 const checkWeather = (subArr, users) => {
@@ -40,8 +44,6 @@ const checkWeather = (subArr, users) => {
                 return;
             }
             for (let i = 0; i < subArr.length; i++) {
-                // msgArr.push({area: subArr[i].area, weather: "", userId: subArr[i].userId});
-                // msgArr[i].weather = weatherModule.getForecast(data, subArr[i].area, msg);
                 processWeather(data, subArr[i].area, subArr[i], users);
             }
         })
@@ -64,7 +66,12 @@ function processWeather(data, location, subObj, users) {
             //     .setFooter(area);
             if (forecast.includes("Rain") || forecast.includes("Showers")) {
                 for (let k = 0; k < subObj.userId.length; k++) {
-                    users.get(subObj.userId[k]).send(`It's raining now at ${subObj.area}`);
+                    const weatherEmbed = new RichEmbed()
+                        .setColor("#38e4ff")
+                        .setTitle(`:bangbang: ${forecast} at ${subObj.area} :bangbang:`)
+                        .setDescription(`From ${start} to ${end}`)
+                        .setFooter(location);
+                    users.get(subObj.userId[k]).send(weatherEmbed);
                 }
             }
             return;
