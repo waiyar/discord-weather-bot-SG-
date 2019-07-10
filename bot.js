@@ -1,6 +1,7 @@
 const fs = require('fs');
 const { Client, Collection } = require('discord.js');
 const { prefix, token } = require('./config.json');
+const { checkSubs } = require('./alarmSystem.js');
 
 const client = new Client();
 client.commands = new Collection();
@@ -16,6 +17,7 @@ const cooldowns = new Collection();
 
 client.on("ready", () => {
     console.log(`Logged in as ${client.user.tag}`);
+    setInterval(checkSubs, 7200000, client.users);  // 2 Hours
 });
 
 client.on("message", msg => {
@@ -64,6 +66,5 @@ client.on("message", msg => {
         msg.reply("An error occured!");
     }
 });
-
 
 client.login(token);
