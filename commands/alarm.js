@@ -11,22 +11,26 @@ module.exports = {
         area = area.join(' ');
         if (action === "set") {
             let sql = "INSERT INTO `subscriptions` (`userId`, `area`, `weather`) VALUES (?, ?, ?)";
-            connection.query(sql, [msg.author.id, area, 'Showers'], (err) => {
-                if (err) {
-                    console.error(err);
-                    return msg.reply("An error occured");
-                }
-                msg.reply(`I will let you know when it's raining in ${area}!`);
-            });
+            try {
+                connection.query(sql, [msg.author.id, area, 'Showers'], (err) => {
+                    if (err) throw err;
+                    msg.reply(`I will let you know when it's raining in ${area}!`);
+                });
+            } catch (e) {
+                console.error(e);
+                msg.reply("An error occured");
+            }
         } else if (action === "clear") {
             let sql = "DELETE FROM `subscriptions` WHERE `userId` = ? AND `area` = ?";
-            connection.query(sql, [msg.author.id, area], (err) => {
-                if (err) {
-                    console.error(err);
-                    return msg.reply("An error occured");
-                }
-                msg.reply(`Your weather-alarm for ${area} has been removed`);
-            });
+            try {
+                connection.query(sql, [msg.author.id, area], (err) => {
+                    if (err) throw err;
+                    msg.reply(`Your weather-alarm for ${area} has been removed`);
+                });
+            } catch (e) {
+                console.error(e);
+                msg.reply("An error occured");
+            }
         }
     }
 }
