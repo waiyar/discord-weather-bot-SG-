@@ -1,3 +1,4 @@
+#! /usr/bin/env node
 const fs = require('fs');
 const { Client, Collection } = require('discord.js');
 const { prefix, token } = require('./config.json');
