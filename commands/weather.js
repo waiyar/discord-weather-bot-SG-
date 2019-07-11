@@ -64,8 +64,15 @@ module.exports = {
         for (let i = 0, len = forecasts.length; i < len; i++) {
             if (forecasts[i].area.toLowerCase().includes(location.toLowerCase())) {
                 let { start, end } = valid_period;
-                start = new Date(start).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });    // E.g 11:30 AM
-                end = new Date(end).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                // Uncomment here and comment block below if system uses SG time
+                // start = new Date(start).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });    // E.g 11:30 AM
+                // end = new Date(end).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                start = new Date(start);
+                start.setHours(start.getHours() + 8);
+                start = start.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });    // E.g 11:30 AM
+                end = new Date(end);
+                end.setHours(end.getHours() + 8);
+                end = end.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
                 const { area, forecast } = forecasts[i];
                 let emoji = emojis.find(e => e.weather === forecast);
