@@ -3,7 +3,8 @@ const { RichEmbed } = require('discord.js');
 const { getPreciseDistance } = require('geolib');
 
 const emojis = [
-    { weather: "Fair (Day)", emojiName: ":sunny:" },
+    { weather: "Fair (Day)", emojiName: ":white_sun_small_cloud:" },
+    { weather: "Fair & Warm", emojiName: ":sunny:" },
     { weather: "Partly Cloudy (Day)", emojiName: ":white_sun_cloud:" },
     { weather: "Partly Cloudy (Night)", emojiName: ":cloud:" },
     { weather: "Cloudy", emojiName: ":cloud:" },
@@ -58,7 +59,7 @@ module.exports = {
             .then(data => this.getForecast(data, location, msg))
             .catch(err => console.error(err));
     },
-    getForecast(data, location, msg) {
+    getForecast(data, location, msg) {  // TODO: Remove this from export or make use of it
         let { valid_period, forecasts } = data.items[0];
         for (let i = 0, len = forecasts.length; i < len; i++) {
             if (forecasts[i].area.toLowerCase().includes(location.toLowerCase())) {
@@ -67,9 +68,10 @@ module.exports = {
                 end = new Date(end).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
                 const { area, forecast } = forecasts[i];
+                let emoji = emojis.find(e => e.weather === forecast);
                 const weatherEmbed = new RichEmbed()
                     .setColor("#38e4ff")
-                    .setTitle(`${forecast} ${emojis.find(e => e.weather === forecast).emojiName}`)
+                    .setTitle(`${forecast} ${emoji === undefined ? "grey_question" : emoji.emojiName}`)
                     .setDescription(`From ${start} to ${end}`)
                     .setFooter(area);
                 return msg.channel.send(weatherEmbed);
@@ -90,7 +92,7 @@ module.exports = {
                                     location = areas[j].name;
                                 }
                             }
-                            return this.getForecast(data, location, msg);
+                            return this.getForecast(data, location, msg);   // Cannot reset i = 0 to loop because async
                         }
                     })
                     .catch(err => console.error(err));
