@@ -18,7 +18,7 @@ const cooldowns = new Collection();
 
 client.on("ready", () => {
     console.log(`Logged in as ${client.user.tag}`);
-    setInterval(checkSubs, 7200000, client.users);  // 2 Hours
+    setInterval(checkSubs, 3600000, client.users);  // 1 Hour
 });
 
 client.on("message", msg => {
