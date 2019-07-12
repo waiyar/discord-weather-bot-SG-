@@ -57,10 +57,10 @@ function processWeather(data, location, subObj, users) {
             let { start, end } = valid_period;
             start = new Date(start);
             start.setHours(start.getHours() + 8);
-            start.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });    // E.g 11:30 AM
+            start = start.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });    // E.g 11:30 AM
             end = new Date(end);
             end.setHours(end.getHours() + 8);
-            end.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            end = end.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
             const { forecast } = forecasts[i];
             // const weatherEmbed = new RichEmbed()
