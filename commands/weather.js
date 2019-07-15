@@ -9,6 +9,7 @@ const emojis = [
     { weather: "Partly Cloudy (Night)", emojiName: ":cloud:" },
     { weather: "Cloudy", emojiName: ":cloud:" },
     { weather: "Light Rain", emojiName: ":white_sun_rain_cloud:" },
+    { weather: "Moderate Rain", emojiName: ":cloud_rain:" },
     { weather: "Showers", emojiName: ":cloud_rain:" },
     { weather: "Thundery Showers", emojiName: ":thunder_cloud_rain:" },
     { weather: "Heavy Thundery Showers with Gusty Winds", emojiName: ":thunder_cloud_rain::dash:" }
