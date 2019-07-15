@@ -17,5 +17,4 @@ steps:
 
 - script: |
     npm install
-    node bot.js
   displayName: 'npm install and build'
