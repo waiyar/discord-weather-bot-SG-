@@ -18,7 +18,7 @@ const cooldowns = new Collection();
 
 client.on("ready", () => {
     console.log(`Logged in as ${client.user.tag}`);
-    setInterval(checkSubs, 3600000, client.users);  // 1 Hour
+    checkSubs(client.users);
 });
 
 client.on("message", msg => {
@@ -67,5 +67,8 @@ client.on("message", msg => {
         msg.reply("An error occured!");
     }
 });
+
+client.on('error', err => console.log("discordjs Error: ", err));
+client.on('disconnect', event => console.log("discordjs Disconnect: ", event));
 
 client.login(token);

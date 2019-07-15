@@ -26,6 +26,7 @@ const checkSubs = (users) => {
                 }
                 subArr.push({ area: res[i].area, userId: [res[i].userId] });
             }
+            setTimeout(checkSubs, 3600000, users);
             return checkWeather(subArr, users);
         });
     } catch (e) {
