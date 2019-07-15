@@ -6,7 +6,7 @@ module.exports = {
     cooldown: 5,
     execute(msg) {
         let sql = "SELECT * FROM `subscriptions` WHERE `userId` = " + msg.author.id;
-        try {
+        /* try {
             connection.query(sql, (err, res) => {
                 if (err) throw err;
                 if (!res.length) {
@@ -20,6 +20,6 @@ module.exports = {
         } catch (e) {
             console.log(e);
             msg.reply("An error has occurred");
-        }
+        } */
     }
 }
