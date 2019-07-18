@@ -18,7 +18,7 @@ const cooldowns = new Collection();
 
 client.on("ready", () => {
     console.log(`Logged in as ${client.user.tag}`);
-    //checkSubs(client.users);
+    checkSubs(client.users);
 });
 
 client.on("message", msg => {

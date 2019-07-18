@@ -3,7 +3,6 @@ const fetch = require("node-fetch");
 const { getPreciseDistance } = require('geolib');
 const { RichEmbed } = require('discord.js');
 
-// Check table for queries every 5 minutes
 const checkSubs = (users) => {
     let sql = "SELECT * FROM `subscriptions`";
     let subArr = [];
@@ -26,7 +25,7 @@ const checkSubs = (users) => {
                 }
                 subArr.push({ area: res[i].area, userId: [res[i].userId] });
             }
-            setTimeout(checkSubs, 3600000, users);
+            setTimeout(checkSubs, 3600000, users);  // Loop every hour
             return checkWeather(subArr, users);
         });
     } catch (e) {
@@ -64,11 +63,6 @@ function processWeather(data, location, subObj, users) {
             end = end.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
             const { forecast } = forecasts[i];
-            // const weatherEmbed = new RichEmbed()
-            //     .setColor("#38e4ff")
-            //     .setTitle(`${forecast} ${emojis.find(e => e.weather === forecast).emojiName}`)
-            //     .setDescription(`From ${start} to ${end}`)
-            //     .setFooter(area);
             if (forecast.includes("Rain") || forecast.includes("Showers")) {
                 for (let k = 0; k < subObj.userId.length; k++) {
                     const weatherEmbed = new RichEmbed()

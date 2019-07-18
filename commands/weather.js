@@ -41,11 +41,9 @@ module.exports = {
                 for (let i = 0, len = allStations.length; i < len; i++) {
                     if (allStations[i].name.toLowerCase().includes(location.toLowerCase())) {
                         matchedStation = allStations[i];
-                        console.log("Station Id: ", matchedStation.id);
                         loop:
                         for (let j = 0, len = rainData.length; j < len; j++) {
                             if (rainData[j].station_id === matchedStation.id) {
-                                console.log(location + ": ", rainData[j].value);
                                 msg.reply(`${matchedStation.name}'s Rain: ${rainData[j].value}mm`);
                                 break loop;
                             }
@@ -108,42 +106,3 @@ module.exports = {
         }
     }
 }
-
-/* function getForecast(data, location, msg) {
-    let { valid_period, forecasts } = data.items[0];
-    for (let i = 0, len = forecasts.length; i < len; i++) {
-        if (forecasts[i].area.toLowerCase().includes(location.toLowerCase())) {
-            let { start, end } = valid_period;
-            start = new Date(start).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });    // E.g 11:30 AM
-            end = new Date(end).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-
-            const { area, forecast } = forecasts[i];
-            const weatherEmbed = new RichEmbed()
-                .setColor("#38e4ff")
-                .setTitle(`${forecast} ${emojis.find(e => e.weather === forecast).emojiName}`)
-                .setDescription(`From ${start} to ${end}`)
-                .setFooter(area);
-            return msg.channel.send(weatherEmbed);
-        } else if (i == len - 1) { // Last of loop, did not match
-            fetch(`https://developers.onemap.sg/commonapi/search?searchVal=${location}&returnGeom=Y&getAddrDetails=N&pageNum=1`)
-                .then(res => res.json())
-                .then(geoData => {
-                    const { found, results } = geoData;
-                    if (found > 0) {
-                        const { LATITUDE: lat, LONGITUDE: lon } = results[0];   // Assuming that the top result is appropriately located
-                        const areas = data.area_metadata;
-                        let distance = 25000; // 25 km as limit
-
-                        for (let j = 0; j < areas.length; j++) {    // Searches the nearest zone
-                            let buff = getPreciseDistance({ lat, lon }, areas[j].label_location);
-                            if (buff < distance) {
-                                distance = buff;
-                                location = areas[j].name;
-                            }
-                        }
-                        return getForecast(data, location, msg);
-                    }
-                })
-        }
-    }
-} */
